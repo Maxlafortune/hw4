@@ -53,7 +53,6 @@ export default class App extends React.Component {
   }
 
   textInputChanged(text) {
-    console.log("hi");
     this.setState({
       locationInputText: text
     });
@@ -67,9 +66,14 @@ export default class App extends React.Component {
     console.log(response.location);
     console.log(response.weather);
 
+    // let data = response.weather;
     // manipulate state
     this.setState({
-      locationName: response.location
+      locationName: response.location,
+      currentTemperature: response.weather.currently.temperature,
+      currentSummary: response.weather.currently.summary,
+      currentIcon: response.weather.currently.icon,
+      forecast: response.weather.daily.data
     });
   }
 
@@ -80,7 +84,14 @@ export default class App extends React.Component {
     //    currentTemperature, currentSummary)
     // 3. Forecast (forecastDay, forecastIcon, forecastTemperature)
     let forecast = []; // this will eventually hold the JSX elements for each day
-
+      for(let i=0;i<5;i++) {
+        forecast.push(
+          <View style={styles.forecastDay} key={i}>
+            <Text style={styles.forecastIcon}>{this.state.forecast[i] && (<Icon size={30} name={icon(this.state.forecast[i].icon)} />)} </Text>
+            <Text> {this.state.forecast[i] && (<Text style={styles.forecastTemperature}>{Math.round(this.state.forecast[i].temperatureHigh)}</Text>)} </Text>
+          </View>
+        )
+      }
     return (
       <View style={styles.container}>
         <View>
@@ -88,8 +99,10 @@ export default class App extends React.Component {
           <Button onPress={() => this.getWeather()} title="Get weather!" />
         </View>
         <View style={styles.currentWeather}>
-          {/* Current weather conditions */}
+          <Text> {this.state.currentIcon && (<Icon size={100} name={icon(this.state.currentIcon)} />)} </Text>
           <Text style={styles.locationText}>{this.state.locationName}</Text>
+          <Text> {this.state.currentIcon && (<Text style={styles.currentTemperature}>{Math.round(this.state.currentTemperature)}</Text>)}</Text>
+          <Text style={styles.currentSummary}>{this.state.currentSummary}</Text>
         </View>
         <View style={styles.forecast}>
           {forecast}
